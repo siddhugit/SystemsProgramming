@@ -1,0 +1,275 @@
+Reads command line arguments to get archive name and list of elements
+to be archived. Each element and its sub elements ( if element is a 
+directory) is archived recursively in USTAR format into the given tar file.
+
+The implementation is divided into two modules.
+ 1) First module (tarc.c) manages the file system. It iterates and reads 
+ the file system for the given elemnets to be archived. It reads information
+ about these elements from the file system and also reads its contents in case 
+ of files.It then calls the services of the other module to store these 
+ information in the tar file.  
+ 
+ 2) Second module (TarcFilemanager.c) manages the tar file. It does all the
+ necessary book keeping required to write tar file. It abstracts all the 
+ tar file details and provides interface for the first module to efficiently
+ write file system information without worrying about tar file book keeping
+ details.
+ 
+ Error Handling:
+ ---------------
+ System call errors.
+ File name, link name too long.
+ Not supported file types.
+ file no read.
+ dir no read/no executable.
+ command line arguments validation.
+ 
+ tarc.c
+ ------------------------------------------------------------------------
+ 
+int main(int argc,char* argv[]);
+    Main function of the program, gets tar file name and elements to archive
+    from command line argument. Calls function to process each element and 
+    notifies tar file manager when processing of all elements finished. Also
+    reports error if command line arguments are not valid
+
+    parameters
+    ----------
+    int argc - number of command line arguments
+    char* argv[] - array of command line arguments
+
+    Return value
+    ------------
+    Returns 1 if error, otherwise 0
+
+
+
+static void traverse(char* elemName);
+    Main calls this for each element, it then calls processElement to process
+    the element. If element is a directory it is called recursively for its
+    child elements.    
+     
+    parameters
+    ----------------------
+    char* elemName - name of element to archive
+
+
+
+static int getStat(char* elemName,struct stat* fileinfo);
+    Calls lstat(2) to get file info, reports error if lstat fails
+
+    parameters
+    ----------------------
+    char* elemName - name of element to archive
+    struct stat* fileinfo - fills stat info in fileinfo
+     
+    Return value
+    ----------------------
+    Returns -1 if error, otherwise 0
+
+
+
+static void processElement(char* elemName,struct stat* fileinfo);
+    Calls funtions to write header and data in case of file types
+    to the archive.
+
+    parameters
+    ----------------------
+    char* elemName - name of element to archive
+    struct stat* fileinfo - file stat info
+
+
+static void writeFileData(char* fileName,int filefd,struct stat* fileinfo);
+    Reads data from file to be archived and writes to tar file.
+
+    parameters
+    ----------------------
+    char* fileName - file name
+    int filefd - file descriptor
+    struct stat* fileinfo - file stat info
+
+
+
+static void writeHeader(char* fileName,struct stat* fileinfo);
+    Writes header part of file/directory to a buffer
+    and calls tar file TarFileManager::writeHeaderBuffToFile
+    to write header  info to tar file
+
+    parameters
+    ----------------------
+    char* fileName - file name
+    int filefd - file descriptor
+    struct stat* fileinfo - file stat info
+    
+    
+
+static int isSupportedFileType(int fileType);
+    Returns true for file types that tarc supports,
+    otherwise returns false.
+    supported file types : regular file,directory,symbolic links,FIFO
+    
+    parameters
+    ----------------------
+    int fileType - type of file in USTAR format
+    
+    
+
+static void writeHeaderToBuff(char* headerBuff,char* fileName,int fileType,
+                                int fileSize,struct stat* fileinfo);
+    Helper function that writes header values to buffer 
+    at prescribed locations.
+    
+    parameters
+    ----------------------
+    char* headerBuff - array of header buffer                               
+    char* fileName - file name
+    int fileType - type of file in USTAR format
+    int fileSize - size of file in bytes
+    struct stat* fileinfo - file stat info
+    
+    
+static int validateLinkname(char* filename,char* linkName);
+    Validates if link name exceeds 100 characters
+    Used readlink(2) to get linkname/linksize of a symbolic link.
+    
+    parameters
+    ----------------------
+    char* fileName - file name
+    char* linkName - link name fills in linkName
+    
+    Return value
+    ----------------------
+    Retruns -1 if link name is longer than 100 chracters or error happens
+    in readlink(3). Otherwise return 0;
+    
+
+static void writeIntVal(char* buff,int offset,int size,int val);
+    Copies numeric values to header buffer.
+    Copies numeric value with leading zeroes 
+    and number octet filled till last but one sapce 
+    and then ends with a null character.
+    
+    parameters
+    ----------------------
+    char* buff - header buffer
+    int offset - offset in header buffer
+    int size - size of field
+    int val - numeric value in decimal
+    
+ 
+static void writeStringVal(char* buff,int offset,int size,char* val);
+    Copies string value to header buffer.
+    
+    parameters
+    ----------------------
+    char* buff - header buffer
+    int offset - offset in header buffer
+    int size - size of field
+    char* value - string value of the corresponding field
+    
+    
+static int validateElemName(char* elemName,char* fileName,int filetype);
+    Validates if entity name exceeds 100 characters.
+    In case of directory it also appends a slash at the end     
+
+
+    parameters
+    ----------------------
+    char* elemName - name of element
+    char* fileName - fills in fileName after processing elemName
+    char* linkName - link name fills in linkName
+    
+    Return value
+    ----------------------
+    Retruns 0 if OK, -1 if error.
+    
+
+static void removeLeadingSlash(char* fileName,char* tempFName);
+    
+    parameters
+    ----------------------
+    char* fileName - file name
+    char* tempFName - fills in tempFName without leading slash in path
+    
+    
+static int getType(int filemode);
+    Returns type of entity in ustar format
+    
+    parameters
+    ----------------------
+    int filemode - file mode in stat
+    
+    Return value
+    ----------------------
+    Retruns Returns type of entity in ustar format, -1 if file type is unknown.
+    
+
+static unsigned int computeCheckSum(char* headerBuff);
+    Computes checksum of tar header.
+    
+    parameters
+    ----------------------
+    char* headerBuff - header buffer containing header data
+    
+    Return value
+    ----------------------
+    Returns checksum value.
+    
+ 
+static char *uid_to_name( uid_t uid )
+    returns pointer to username associated with uid, uses getpw()
+
+
+static char *gid_to_name( gid_t uid );
+    returns pointer to group number gid. used getgrgid(3)
+    
+    
+
+
+TarcFileManager.c                                 #include "TarcFileManager.h"
+-------------------------------------------------------------------------------
+    
+
+void setTarFileDescriptor(int tarfd);
+    Sets file descriptor for tar file manager.
+     
+    parameters
+    ----------------------
+    int tarfd - tar file descriptor
+    
+static void initBlocks(int size);
+    initialize next "size" bytes with null character in the tar file. 
+    
+    parameters
+    ----------------------
+    int size - size in bytes to initialize with nulls.
+    
+
+void writeHeaderBuffToFile(char* headerBuff);
+    Writes header data in header buff to the tar file
+    
+    parameters
+    ----------------------
+    char* headerBuff - buffer containing header data.
+    
+
+void writeDataBuffToFile(unsigned char* dataBuff,int bytesToWrite);
+        
+    parameters
+    ----------------------
+    unsigned char* dataBuff - buffer containing file contents.
+    int bytesToWrite - size of dataBuff to write into tar file.
+
+    
+void writeDataFinished(void);
+    update bytes in file to exact multiple of BLOCKLEN for the next
+    element in the archive. Call this when all data in file 
+    is written to the tar file.
+    
+
+void writeArchiveFinished(void);
+    Writes another 20 empty blocks if tar file has 
+    less than 2 empty blocks at the end. this function
+    is called when all elements in arvchive file have been
+    written to tar file.     
+    

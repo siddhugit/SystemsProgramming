@@ -1,0 +1,52 @@
+Name : Siddharth Singh
+Harvard ID : 40897542
+DCE ID : @00251615
+Homework - 5 ( smsh )
+
+Note :  I have implemented dot operator for extra credit problem.
+        The three script files (scr1,scr2,scr3) used to demonstrate 
+        this is included in the submission. scr1 includes scr2 and scr2
+        include scr3. 
+
+The submitted files are:
+
+Script files used to demonstrate dot operator:
+==============================================
+1) scr1
+2) scr2
+3) scr3
+
+Source files:
+=============
+builtin.c
+execute.c  
+process.c  
+splitline.c
+calltree.c  
+flexstr.c  
+smsh.c     
+varlib.c
+
+Header files:
+=============
+calltree.h  
+flexstr.h  
+process.h  
+smsh.h  
+splitline.h  
+varlib.h
+
+Make file:
+==========
+Makefile
+
+Typescript file:
+================
+typescript
+
+Outline:
+========
+Outline
+
+
+

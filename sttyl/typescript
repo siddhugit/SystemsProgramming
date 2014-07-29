@@ -1,0 +1,94 @@
+Script started on Sat 16 Mar 2013 05:07:36 PM EDT
+siddharthsingh@ice3:~/sttyl$ sh
+$ echo $0
+sh
+$ make
+gcc -Wall -c sttyl.c
+gcc -Wall -c TCProperty.c
+gcc -Wall -o sttyl sttyl.o TCProperty.o
+$ ~lib215/hw/stty/test.stty
+   0. Looking at output : tf should examine this 
+ 
+speed 38400 baud; 
+intr = ^C; erase = ^?; kill = ^U; start = ^Q; stop = ^S; werase = ^W; 
+icrnl 
+-olcuc onlcr 
+isig icanon echo echoe 
+ 
+   I. testing erase and kill chars  
+        a. Simple chars .. OK
+ 
+	c. Typical one-char control chars.. OK
+ 
+	d. No argument given to erase..erase : missing argument
+OK
+	Note: your version exited with 1
+ 
+  III. Checking each flag separately .. 
+		icrnl ..  OK 
+                onlcr ..  OK 
+                echo ..  OK 
+                echoe ..  OK 
+                olcuc ..  OK 
+                icanon ..  OK 
+                isig ..  OK 
+ 
+ IV. Checking all flag pairs
+ icrnl:OK onlcr:OK echo:OK echoe:OK olcuc:OK ICANON:OK isig:OK 
+	Checking results .. 
+all tests worked correctly
+resetting tty
+$ ./sttyl
+speed 38400 baud; 
+intr = ^C; erase = ^?; kill = ^U; start = ^Q; stop = ^S; werase = ^W; 
+icrnl 
+-olcuc onlcr 
+isig icanon echo echoe 
+$ stty -a
+speed 38400 baud; rows 41; columns 144; line = 0;
+intr = ^C; quit = ^\; erase = ^?; kill = ^U; eof = ^D; eol = <undef>; eol2 = <undef>; swtch = <undef>; start = ^Q; stop = ^S; susp = ^Z;
+rprnt = ^R; werase = ^W; lnext = ^V; flush = ^O; min = 1; time = 0;
+-parenb -parodd cs8 -hupcl -cstopb cread -clocal -crtscts
+-ignbrk -brkint -ignpar -parmrk -inpck -istrip -inlcr -igncr icrnl ixon -ixoff -iuclc -ixany imaxbel -iutf8
+opost -olcuc -ocrnl onlcr -onocr -onlret -ofill -ofdel nl0 cr0 tab0 bs0 vt0 ff0
+isig icanon iexten echo echoe echok -echonl -noflsh -xcase -tostop -echoprt echoctl echoke
+$ ./sttyl kill A -echoe erase B
+$ ./sttyl
+speed 38400 baud; 
+intr = ^C; erase = B; kill = A; start = ^Q; stop = ^S; werase = ^W; 
+icrnl 
+-olcuc onlcr 
+isig icanon echo -echoe 
+$ stty -a
+speed 38400 baud; rows 41; columns 144; line = 0;
+intr = ^C; quit = ^\; erase = B; kill = A; eof = ^D; eol = <undef>; eol2 = <undef>; swtch = <undef>; start = ^Q; stop = ^S; susp = ^Z;
+rprnt = ^R; werase = ^W; lnext = ^V; flush = ^O; min = 1; time = 0;
+-parenb -parodd cs8 -hupcl -cstopb cread -clocal -crtscts
+-ignbrk -brkint -ignpar -parmrk -inpck -istrip -inlcr -igncr icrnl ixon -ixoff -iuclc -ixany imaxbel -iutf8
+opost -olcuc -ocrnl onlcr -onocr -onlret -ofill -ofdel nl0 cr0 tab0 bs0 vt0 ff0
+isig icanon iexten echo -echoe echok -echonl -noflsh -xcase -tostop -echoprt echoctl echoke
+$ stty sane
+$ ./sttyl intr D -isig erase E
+$ stty -a
+speed 38400 baud; rows 41; columns 144; line = 0;
+intr = D; quit = ^\; erase = E; kill = ^U; eof = ^D; eol = <undef>; eol2 = <undef>; swtch = <undef>; start = ^Q; stop = ^S; susp = ^Z;
+rprnt = ^R; werase = ^W; lnext = ^V; flush = ^O; min = 1; time = 0;
+-parenb -parodd cs8 -hupcl -cstopb cread -clocal -crtscts
+-ignbrk brkint -ignpar -parmrk -inpck -istrip -inlcr -igncr icrnl ixon -ixoff -iuclc -ixany imaxbel -iutf8
+opost -olcuc -ocrnl onlcr -onocr -onlret -ofill -ofdel nl0 cr0 tab0 bs0 vt0 ff0
+-isig icanon iexten echo echoe echok -echonl -noflsh -xcase -tostop -echoprt echoctl echoke
+$ ./sttyl kill1
+kill1 : Invalid Argument
+$ ./sttyl echo1
+echo1 : Invalid Argument
+$ ./sttyl kill AB
+AB : Invalid Argument
+$ ./sttyl erase
+erase : missing argument
+$ make clean
+rm -r sttyl sttyl.o TCProperty.o
+$ exit
+siddharthsingh@ice3:~/sttyl$ exit
+exit
+
+Script done on Sat 16 Mar 2013 05:11:46 PM EDT

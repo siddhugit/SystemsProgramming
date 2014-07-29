@@ -1,0 +1,34 @@
+#create files and directories to test tarc program
+./mkdir.sh
+
+#directory structure created by mkdir.sh
+ls -lR dir1
+
+#runs tarc program to create archive named d1.tar
+./tarc d1.tar dir1
+
+#runs system to create archive named d2.tar
+tar cvf d2.tar dir1
+
+#size comparison of d1.tar and d2.tar
+ls -l
+
+#table of contents of d1.tar and d2.tar
+tar tvf d1.tar
+tar tvf d2.tar
+
+#rename dir1 in preparation of testing extraction of d1.tar  
+mv dir1 dir1.bak
+
+#extract di.tar
+tar xvf d1.tar
+
+#directory structure of extracted dir1 
+ls -lR dir1
+
+#test to check absolute path handling by tarc
+./tarc d1.tar /home/s/i/siddharthsingh/tarc/testdir/dir1 
+tar tvf d1.tar
+
+#run script from the assignment
+~lib215/hw/tarc/test.tarc

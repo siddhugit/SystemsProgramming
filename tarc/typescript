@@ -1,0 +1,254 @@
+Script started on Sat 02 Mar 2013 04:12:21 PM EST
+siddharthsingh@ice3:~/tarc/testdir$ ./mkdir.sh 
+siddharthsingh@ice3:~/tarc/testdir$ ls -lR dir1
+dir1:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu   15 2013-03-02 16:12 a
+drwxr-xr-x 4 siddharthsingh extstu 1024 2013-03-02 16:12 dir2
+drwxr-xr-x 4 siddharthsingh extstu 1024 2013-03-02 16:12 dir3
+
+dir1/dir2:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 b
+drwxr-xr-x 2 siddharthsingh extstu 80 2013-03-02 16:12 dir4
+drwxr-xr-x 2 siddharthsingh extstu 80 2013-03-02 16:12 dir5
+
+dir1/dir2/dir4:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 d
+
+dir1/dir2/dir5:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 e
+
+dir1/dir3:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 c
+drwxr-xr-x 2 siddharthsingh extstu 80 2013-03-02 16:12 dir6
+drwxr-xr-x 2 siddharthsingh extstu 80 2013-03-02 16:12 dir7
+
+dir1/dir3/dir6:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 f
+
+dir1/dir3/dir7:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 g
+siddharthsingh@ice3:~/tarc/testdir$ ./tarc d1.tar dir1
+siddharthsingh@ice3:~/tarc/testdir$ tar cvf d2.tar dir1
+dir1/
+dir1/dir2/
+dir1/dir2/dir4/
+dir1/dir2/dir4/d
+dir1/dir2/dir5/
+dir1/dir2/dir5/e
+dir1/dir2/b
+dir1/dir3/
+dir1/dir3/dir6/
+dir1/dir3/dir6/f
+dir1/dir3/dir7/
+dir1/dir3/dir7/g
+dir1/dir3/c
+dir1/a
+siddharthsingh@ice3:~/tarc/testdir$ ls -l
+total 88
+-rw-r--r-- 1 siddharthsingh extstu 20480 2013-03-02 16:12 d1.tar
+-rw-r--r-- 1 siddharthsingh extstu 20480 2013-03-02 16:13 d2.tar
+drwxr-xr-x 4 siddharthsingh extstu  1024 2013-03-02 16:12 dir1
+-rwxr--r-- 1 siddharthsingh extstu   417 2013-03-02 16:10 mkdir.sh
+-rwxr-xr-x 1 siddharthsingh extstu 13779 2013-03-02 16:04 tarc
+-rw-r--r-- 1 siddharthsingh extstu   711 2013-03-02 16:12 testplan
+-rw-r--r-- 1 siddharthsingh extstu     0 2013-03-02 16:12 typescript
+siddharthsingh@ice3:~/tarc/testdir$ tar tvf d1.tar
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 dir1/
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 dir1/dir2/
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 dir1/dir2/dir4/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir2/dir4/d
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 dir1/dir2/dir5/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir2/dir5/e
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir2/b
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 dir1/dir3/
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 dir1/dir3/dir6/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir3/dir6/f
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 dir1/dir3/dir7/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir3/dir7/g
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir3/c
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/a
+siddharthsingh@ice3:~/tarc/testdir$ tar tvf d2.tar
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 dir1/
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 dir1/dir2/
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 dir1/dir2/dir4/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir2/dir4/d
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 dir1/dir2/dir5/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir2/dir5/e
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir2/b
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 dir1/dir3/
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 dir1/dir3/dir6/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir3/dir6/f
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 dir1/dir3/dir7/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir3/dir7/g
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/dir3/c
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 dir1/a
+siddharthsingh@ice3:~/tarc/testdir$ mv dir1 dir1.bak
+siddharthsingh@ice3:~/tarc/testdir$ tar xvf d1.tar
+dir1/
+dir1/dir2/
+dir1/dir2/dir4/
+dir1/dir2/dir4/d
+dir1/dir2/dir5/
+dir1/dir2/dir5/e
+dir1/dir2/b
+dir1/dir3/
+dir1/dir3/dir6/
+dir1/dir3/dir6/f
+dir1/dir3/dir7/
+dir1/dir3/dir7/g
+dir1/dir3/c
+dir1/a
+siddharthsingh@ice3:~/tarc/testdir$ ls -lR dir1
+dir1:
+total 24
+-rw-r--r-- 1 siddharthsingh extstu   15 2013-03-02 16:12 a
+drwxr-xr-x 4 siddharthsingh extstu 1024 2013-03-02 16:12 dir2
+drwxr-xr-x 4 siddharthsingh extstu 1024 2013-03-02 16:12 dir3
+
+dir1/dir2:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 b
+drwxr-xr-x 2 siddharthsingh extstu 80 2013-03-02 16:12 dir4
+drwxr-xr-x 2 siddharthsingh extstu 80 2013-03-02 16:12 dir5
+
+dir1/dir2/dir4:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 d
+
+dir1/dir2/dir5:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 e
+
+dir1/dir3:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 c
+drwxr-xr-x 2 siddharthsingh extstu 80 2013-03-02 16:12 dir6
+drwxr-xr-x 2 siddharthsingh extstu 80 2013-03-02 16:12 dir7
+
+dir1/dir3/dir6:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 f
+
+dir1/dir3/dir7:
+total 8
+-rw-r--r-- 1 siddharthsingh extstu 15 2013-03-02 16:12 g
+siddharthsingh@ice3:~/tarc/testdir$ ./tarc d1.tar /home/s/i/siddharthsingh/tarc/te stdir/dir1 
+siddharthsingh@ice3:~/tarc/testdir$ tar tvf d1.tar
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir2/
+drwxr-xr-x siddharthsingh/extstu 0 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir2/dir4/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir2/dir4/d
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir2/dir5/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir2/dir5/e
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir2/b
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir3/
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir3/dir6/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir3/dir6/f
+drwxr-xr-x siddharthsingh/extstu  0 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir3/dir7/
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir3/dir7/g
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/dir3/c
+-rw-r--r-- siddharthsingh/extstu 15 2013-03-02 16:12 home/s/i/siddharthsingh/tarc/testdir/dir1/a
+siddharthsingh@ice3:~/tarc/testdir$ ~lib215/hw/tarc/test.tarc
+============================================================
+    test-1.a -- archive a regular file
+============================================================
+Executing 'tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-1.a.tarc file' in directory /home/l/i/lib215/hw/tarc/testdir/test1
+------------------------------------------------------------
+Result: test-1.a [PASSED]
+------------------------------------------------------------
+============================================================
+    test-1.b -- archive an empty directory
+============================================================
+Executing 'tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-1.b.tarc directory' in directory /home/l/i/lib215/hw/tarc/testdir/test1
+------------------------------------------------------------
+Result: test-1.b [PASSED]
+------------------------------------------------------------
+============================================================
+    test-1.c -- archive a symbolic link
+============================================================
+Executing 'tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-1.c.tarc symlink' in directory /home/l/i/lib215/hw/tarc/testdir/test1
+------------------------------------------------------------
+Result: test-1.c [PASSED]
+------------------------------------------------------------
+============================================================
+    test-1.d -- archive a named pipe
+============================================================
+Executing 'tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-1.d.tarc fifo' in directory /home/l/i/lib215/hw/tarc/testdir/test1
+------------------------------------------------------------
+Result: test-1.d [PASSED]
+------------------------------------------------------------
+============================================================
+    test-1.e -- archive one of each file type
+============================================================
+Executing 'tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-1.e.tarc file directory symlink fifo' in directory /home/l/i/lib215/hw/tarc/testdir/test1
+------------------------------------------------------------
+Result: test-1.e [PASSED]
+------------------------------------------------------------
+============================================================
+    test-2 -- archive directories with file contents
+============================================================
+Executing '/home/s/i/siddharthsingh/tarc/testdir/tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-2.tarc *' in directory /home/l/i/lib215/hw/tarc/testdir/test2
+Extracting test-2.tarc in directory test-2 ...
+Comparing directory test-2 to /home/l/i/lib215/hw/tarc/testdir/test2 ...
+------------------------------------------------------------
+Result: test-2 [PASSED]
+------------------------------------------------------------
+============================================================
+    test-3 -- archive directories with subdirectories
+============================================================
+Executing '/home/s/i/siddharthsingh/tarc/testdir/tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-3.tarc *' in directory /home/l/i/lib215/hw/tarc/testdir/test3
+Extracting test-3.tarc in directory test-3 ...
+Comparing directory test-3 to /home/l/i/lib215/hw/tarc/testdir/test3 ...
+------------------------------------------------------------
+Result: test-3 [PASSED]
+------------------------------------------------------------
+============================================================
+    test-4.a -- command line error: no args
+============================================================
+Executing '/home/s/i/siddharthsingh/tarc/testdir/tarc' with no arguments ...
+Usage : tarc archivename dir-or-file1 [ dir-or-file2 ... ]
+------------------------------------------------------------
+Result: test-4.a [PASSED]
+------------------------------------------------------------
+============================================================
+    test-4.b -- command line error: only one arg
+============================================================
+Executing '/home/s/i/siddharthsingh/tarc/testdir/tarc' with only one arg ...
+Usage : tarc archivename dir-or-file1 [ dir-or-file2 ... ]
+------------------------------------------------------------
+Result: test-4.b [PASSED]
+------------------------------------------------------------
+============================================================
+    test-5.a -- permission error: unreadable file/dir
+============================================================
+Executing 'tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-5.a.tarc dir1/file-noread dir_noread dir1/file-1.a' in directory /home/l/i/lib215/hw/tarc/testdir/test5
+dir1/file-noread: Permission denied
+dir_noread: Permission denied
+------------------------------------------------------------
+Result: test-5.a [PASSED]
+------------------------------------------------------------
+============================================================
+    test-5.b -- permission error: unexecutable dir
+============================================================
+Executing '/home/s/i/siddharthsingh/tarc/testdir/tarc /home/s/i/siddharthsingh/tarc/testdir/test/test-5.b.tarc *' in directory /home/l/i/lib215/hw/tarc/testdir/test5
+dir1/file-noread: Permission denied
+dir_noread: Permission denied
+------------------------------------------------------------
+Result: test-5.b [PASSED]
+------------------------------------------------------------
+
+
+============================================================
+    All Tests Passed
+============================================================
+siddharthsingh@ice3:~/tarc/testdir$ exit
+exit
+
+Script done on Sat 02 Mar 2013 04:15:19 PM EST

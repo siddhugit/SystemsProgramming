@@ -1,0 +1,93 @@
+Script started on Sat 27 Apr 2013 08:57:35 PM EDT
+siddharthsingh@ice3:~/smsh$ make
+gcc -Wall -c smsh.c
+gcc -Wall -c splitline.c
+gcc -Wall -c execute.c
+gcc -Wall -c process.c
+gcc -Wall -c builtin.c
+gcc -Wall -c flexstr.c
+gcc -Wall -c varlib.c
+gcc -Wall -c calltree.c
+gcc -Wall -o smsh smsh.o splitline.o execute.o process.o \
+		builtin.o flexstr.o  varlib.o calltree.o
+siddharthsingh@ice3:~/smsh$ ~lib215/hw/smsh/test.smsh
+  Testing ./smsh as of Sat Apr 27 20:58:28 EDT 2013
+-rwxr-xr-x 1 siddharthsingh extstu 17758 2013-04-27 20:57 ./smsh
+
+	* Test 1: Does the program read commands from a script? 
+		OK
+	* Test 2a: Does cd work correctly? 
+		cd works when the directory exists
+		/bad.directory: No such file or directory
+OK: cd detects bad directories
+	* Test 2b: Does cd without args return to /home/s/i/siddharthsingh
+		OK: cd without an arg returns to $HOME
+	* Test 3: Does the shell do variable substitution correctly?
+		and ignore dollar signs when asked?
+		OK
+	* Test 3m: Does shell handle substring varnames?
+
+OK
+
+	* Test 4: Does the shell read in variables correctly?
+		OK
+	* Test 5a: Does one-level if and else work?
+		OK
+	* Test 5b: Does the if detect missing thens ?
+		unexpected else
+unexpected
+OK
+	* Test 5c: Does the if command find unexpected EOFS?
+		unexpected
+OK
+	* Test 5d: Does the if catch missing ifs?
+		root:x:0:0:root:/root:/bin/bash
+something is wrong here
+there is no login for root
+unexpected else
+unexpected
+OK
+	* Test 6: Does the shell process the exit built-in ok?
+		OK
+	* Test 7: Does nested if work?
+			Output should consist of lines 1 2 3 4 5 6
+	line 1
+	line 2
+	line 3
+	line 4
+	line 5
+	line 6
+OK
+	* Test 7d: Does nested if work for deep structures?
+		  Testing deep1
+OK
+  Testing deep2
+OK
+  Testing deep3
+OK
+	* Test 8: A manual test
+		
+	Does your shell reject assignment statements of the
+	form   
+		9xyz=tuna  
+	or      x.y=fun
+	
+	 That is, assignments to names that are not legal
+	variable identifiers
+siddharthsingh@ice3:~/smsh$ ./smsh scr1
+this is scr1
+Hello World
+this is scr2
+Sat Apr 27 20:58:48 EDT 2013
+this is scr3
+/nfs/home/s/i/siddharthsingh/smsh
+siddharthsingh@ice3:~/smsh$ ./smsh
+> 9xyz=tuna
+cannot execute command: No such file or directory
+> x.y=fun
+cannot execute command: No such file or directory
+> exit
+siddharthsingh@ice3:~/smsh$ exit
+exit
+
+Script done on Sat 27 Apr 2013 08:59:39 PM EDT

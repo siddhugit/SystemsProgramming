@@ -1,0 +1,32 @@
+Name : Siddharth Singh
+Harvard ID : 40897542
+DCE ID : @00251615
+Homework - 6 ( wsng )
+
+Note :  I have implemented logging for extra credit. logfile name is 
+        specified in wsng.conf file.
+
+The submitted files are:
+
+Source files:
+=============
+wsng.c
+mimetype.c
+socklib.c
+
+Header files:
+=============
+mimetype.h
+socklib.h
+
+Configuration file:
+===================
+wsng.conf
+
+Make file:
+==========
+Makefile
+
+Outline:
+========
+Outline

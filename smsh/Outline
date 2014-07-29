@@ -1,0 +1,146 @@
+     Author:    Siddharth Singh
+	 Date:	4/26/2013
+     Contains:	Design details for CSCI E-215 homework 5 submission.
+===============================================================================
+
+Project: smsh
+
+Usage: ./smsh [scriptname]
+
+Purpose : 
+=========
+
+Write a program which acts as a shell and add following features to it.
+    o Built in commands
+        o cd
+        o exit
+        o read
+        o comments
+    o Commands from scripts
+        o run script file ( e.g. smsh scriptname)
+    o Variables 
+        o variable substitution
+        o escape character substituton
+    o Control structures
+        o else
+        o nested if else
+    o dot operator ( extra credit )
+        o recusrsivley run scripts included in other scripts run by smsh
+
+Data Structure:
+===============
+
+Nested if else parser tree : I've created this data structure in smsh program
+in order to parse if-else control structure. This data structure supports
+nested if-else. 
+
+I have defined two structs.
+
+struct IfBlock
+{
+    char** commandargs;
+    COMMSEQ* thenComSeq;
+    COMMSEQ* elseComSeq;
+};
+
+The above struct represents an if block which contains a command (commandargs) 
+which detremines the outcome of if condition. It has sequence of commands for
+both then and else (thenComSeq and elseComSeq) part of if block. Each element
+of sequence of commands can either be a command or another nested if block.
+The sequence of commands is arranged as linked list. The variables thenComSeq 
+and elseComSeq ponits to header node of corresponding sequence of commands.
+
+struct CommandSequence
+{
+    void* cmd;
+    enum Commandtype type;
+    struct CommandSequence* next;
+};
+
+The above element represent each element of a command sequence. 'cmd' can 
+either point to a command string or another nested if block. The 'type'
+varibles stores the information which determines if sequence element is 
+a command or a nested if block. 'type' is either COMMAND or NESTED_IF.
+The variable 'next' points to next element in the sequence;null indicates
+end of sequence.
+
+Algorithm:
+==========
+
+Program read each line from iput and process it. If it encounters control
+structure ( if else ), the entire structure is first read and reports if
+any syntax error found. 
+If-else has been handled using recursion and data structure described above.
+Program first creates a call tree, if any syntax error is found, program 
+reports it and destroys the call tree and cleans up the memory. Program makes
+sure to prevent memory leakage during creating and destroying call tree.
+If no syntax error is found call tree is processed by executing necessary 
+commands in the tree and nested structure of if-else is handled recursively.
+After processing, call tree is destroyed so that there is no memory leakage.
+
+In main flow of the program each command line is checked to find out if command
+is a built in command or regular unix commands. The built in commands are 
+handled separately using corresponding handler functions.
+
+The regular commands are invoked in synchronized manner. The function
+(execute()) which implements invoking of regular commands does a fork, exec
+the command in the child process and waits in the parent process until
+child process is finished. parent process calls wait() to do that which also
+collects the exit status of child process.
+
+The outcome of each operation described above is propagated to the top of
+the program stack ( till main() function of the program ) so that main program
+can return overall status of the program execution.  
+
+Program flow:
+=============
+
+o Read command line argument
+    o If no command line argument given process stdin
+    o else open script file for reading and process the file pointer
+o Ignore SIGINT and SIGQUIT
+o Read line by line from the input
+o Do variable substitution
+o Check the type of each line from input
+    o If type is of built, handle it
+    o If type is control structure (if - else)
+        o create a call tree using recursion and data structure described above
+        o report is syntax error is found
+        o process tree and execute commands recursively
+        o destroy tree after processing using recursion
+    o if regular command found
+        o fork
+        o exec command and wait in main process
+        o Enable SIGINT and SIGQUIT to default action in child process
+        o return exit status of command
+o Return exit status of smsh from main
+
+Error handling
+==============
+
+o Reported control structure syntax errors
+o Reported command not found error
+o Reported system calls error
+    o fok
+    o exec
+    o wait
+
+Typescript
+==========
+make : to demonstrate clean build
+~lib215/hw/smsh/test.smsh : assignment test script
+./smsh scr1 : to demonstrate dot operator ( scr1 includes scr2 and 
+                scr2 includes scr3)
+./smsh
+9xyz=tuna : illegal variable names
+x.y=fun
+exit
+
+  
+
+
+
+
+
+    
+ 

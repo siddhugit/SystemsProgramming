@@ -1,0 +1,127 @@
+     Author:    Siddharth Singh
+	 Date:	3/16/2013
+     Contains:	Design details for CSCI E-215 homework 3 submission.
+===============================================================================
+
+Project: sttyl
+
+Usage: sttyl [SPECIALCHAR CHAR] [ [-]FLAG]
+
+Purpose:
+========
+sttyl, a version of stty that supports the following options:
+1) Display terminal settings when invoked with no command line arguments.
+2) Supports setting following terminal settings and flags.
+    erase,intr,kill,icrnl, onlcr, echo, echoe,
+     olcuc, icanon, and isig
+3) Supports multiple settings in command line.
+4) Error handling : reports error for arguments sttyl does not support.
+
+Data Structure:
+===============
+sttyl keeps a table of settings it supports. Each row in the table represents
+one setting. Setting name in each row is unique and acts as a primary key.
+The table is an array of a struct defined as:
+struct TC_Property
+{
+    char* propName;
+    size_t offset;   
+    int propIndex;
+};
+The data members are columns for the table :
+1) propName : name of the setting.
+2) Offset : Each data member of termios struct represents a group of settings
+   (E.g. local flags, input flags, control char array ).
+   Offset is the location of data member within the termios object in memory
+   to which the setting belongs. Keeping offset in the table enables me to not
+   only idetify the group type but fetch the data member object at run time. 
+   This saves me from writting different functions for different group types
+   of termios. A single function handles all types. This gives more 
+   maintainibility and extensibility to my program. To support more settings 
+   I just need to add a row for each new setting.
+   offset is computed using offsetof(3) function.
+3) propIndex : It represents the index or bit mask of the setting in the 
+   corresponding data member of termios.
+
+Algorithm:
+==========
+Program gets termios as a local object which has information about terminal 
+settings by calling tcgetattr(). 
+
+To display settings program iterates through each element of array (the table).
+For each element it gets the offset, from offset program fetches the termios
+data member object that contains the terminal setting for the element. Using 
+propIndex and depending upon termios object type program fetches value or state
+of the setting and displays it on the standard output.
+
+When program is run with arguments, it processes each argument in a loop.
+For each argument it does a linear search on table by comparing
+propName with the argument. As I mentioned earlier the record in the table
+contains information about offset and index of the setting. 
+The corresponding value of the setting is set at the right place 
+in the local termios object using offset and index. 
+Once all the arguments are processed and the local termios object conatins all
+the changes, program calls tcsetattr() to copy local termios into terminal 
+settings. While processing arguments program checks validity of each 
+argument and in case any argument invalid program reports error and exits with
+a failure exit status. Error handling has been described in a separate section 
+below.
+
+Program flow:
+=============
+    o gets the terminal settings in a local termios object by calling
+          tcgetattr() 
+    o If no argument is passed       
+        o iterates through each element in the table
+        o for each element it gets the offset and using offset it fetches the 
+          corresponding data member in the termios object.  
+        o program sets the setting value/state using propIndex. If setting is
+          flag type then propIndex is bit mask and the state of setting is 
+          retreived by check if the corresponding bit is on or off in the data
+          member. In case of character array type setting value is located at
+          propIndex.
+        o program prints the setting value state of the element. 
+    o If arguments are passed
+       o iterate through each argument
+       o search argument in table 
+       o get the offset and index of setting from record found in the table
+       o get reference of corresponding data member in terios object using
+         offset and index.
+       o set value in the reference
+       o once all arguments are processed and changes to the local termios 
+         object have been made copy the object into terminal settings by
+         calling tcsetattr().
+
+Error handling:
+===============
+
+1) invalid argument
+    o if argument has leading '-' and argument is not of flag type
+    o if '-' is passed as a single character argument
+    o argument is not found in the table
+    o value is not provided for array types in the command line
+    o if value provided for array type has size more than one
+2) system call errors
+    o if return value of tcgetattr is -1
+    o if return value of tcsetattr is -1 
+
+Test Script:
+============
+o sh : change shell
+o make : to show clean compile
+o ~lib215/hw/stty/test.stty : assignment test program
+o ./sttyl : display settings
+o stty -a : use system stty to display settings
+o ./sttyl kill A -echoe erase B : handle multiple arguments
+o ./sttyl : display settings
+o stty -a : use system stty to display settings
+o stty sane : reset
+o ./sttyl intr D -isig erase E : handle multiple arguments
+o stty -a : use system stty to display settings
+o ./sttyl kill1 : wrong setting name
+o ./sttyl echo1 : wrong setting name
+o ./sttyl kill AB : wrong argument for cc type
+o ./sttyl erase : missing argument for cc type
+o make clean : remove binaries before submitting 
+
+ 

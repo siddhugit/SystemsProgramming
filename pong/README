@@ -1,0 +1,38 @@
+Name : Siddharth Singh
+Harvard ID : 40897542
+DCE ID : @00251615
+Homework - 4 ( pong )
+
+The submitted files are:
+
+Source files:
+=============
+1) ball.c
+2) ball.h
+3) game.c
+4) game.h
+5) paddle.c
+6) paddle.h
+7) pong.c
+8) pong.h
+9) handlers.c
+10) handlers.h
+
+Header files:
+=============
+1) sttyl.h
+
+Make file:
+==========
+Makefile
+
+Typescript file:
+================
+typescript
+
+Outline:
+========
+Outline
+
+
+

@@ -1,0 +1,13 @@
+Script started on Sat 06 Apr 2013 06:33:50 PM EDT
+siddharthsingh@ice3:~/pong$ make
+gcc -Wall   -c -o pong.o pong.c
+gcc -Wall -c paddle.c
+gcc -Wall -c game.c
+gcc -Wall -c handlers.c
+gcc -Wall -c ball.c
+gcc -Wall -o pong \
+        pong.o paddle.o game.o handlers.o ball.o -lcurses -lrt 
+siddharthsingh@ice3:~/pong$ exit
+exit
+
+Script done on Sat 06 Apr 2013 06:34:03 PM EDT

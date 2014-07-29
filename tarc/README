@@ -1,0 +1,37 @@
+Name : Siddharth Singh
+Harvard ID : 40897542
+DCE ID : @00251615
+Homework - 2 ( tarc )
+
+The submitted files are:
+
+Source files:
+-------------
+1) tarc.c
+2) TarcFileManager.c
+
+
+Header files:
+-------------
+1) TarcFileManager.h
+2) TarcUstar.h
+
+
+Make file:
+----------
+Makefile
+
+Typescript file:
+----------------
+typescript
+
+Outline:
+--------
+Outline
+
+Test:
+-----
+testdir/testplan
+testdir/mkdir.sh
+
+

@@ -1,0 +1,107 @@
+     Author:    Siddharth Singh
+	 Date:	5/11/2013
+     Contains:	Design details for CSCI E-215 homework 6 submission.
+===============================================================================
+
+Project: wsng
+
+Purpose : 
+=========
+
+Write and implement various features of a webserver.
+
+Algorithm:
+==========
+
+Better Reply Headers:
+---------------------
+At the time of writting http headers I added server name header then
+exec a new process to run system's date command. The standard output
+of process which runs date command is redirected to socket connection.
+
+Support the HEAD method:
+-------------------------
+Parse request string to figure out type of command. 
+For following cases headers and body of http response are written
+separately:
+do_cat,do_ls,do_404,do_403
+In these cases I put a check to filter out the execution of code which
+write http body.
+In the case of do_exec , http headers can come from cgi execution. 
+So I do a popen() and run the cgi script and read its output. I read the
+output till I encounter a blank line which indicates end of http headers.
+Then I write the data I read to socket connection. I do pclose() to avoid 
+zombies.
+
+Table-Driven File Types:
+------------------------
+I implement a dynamic array. Each element of array contains key/value
+pair of mime type read from the conf file. I load this array at server startup
+and later in the program I search the array to find value for a mime type.
+If mime type not found then a default value is returned.
+
+Directory Listings with Links:
+------------------------------
+If directory contains index.cgi or index.html then I call do_exec or do_cat
+to handle it. Otherwise I read directory to fetch entries and create html 
+which has links for the entries. the target of each link is the same file or
+directory and I return the html as response.
+
+index.html, index.cgi
+---------------------
+I first find out if directory contains index.html or index.cgi in that order.
+As explained above if directory contains index.cgi or index.html then I call
+do_exec or do_cat to handle it. 
+
+Handles Errors
+--------------
+I have handled 403. To do so I check if a directory has permission to list
+the entries by checking return value of opendir(3). I case of file I check 
+return value of fopen(3) in read mode. If these call fails then I send 403
+to client.
+
+Zombies:
+--------
+In main() I install a signal handler function for SIGCHLD. in signal handler
+function I call waitpid(-1,NULL,WNOHANG) in a while loop. It will wait for
+all terminated child processes, also it will return immediately if there are
+no outstanding terminated child process.
+Also if accept() returns -1, I check if errno is equal to EINTR. This  
+resolves whether accept() returned due to SIGCHLD signal (interrupt) or some
+other reason. In former case I continue to accept request and in later case
+I exit from the server process.
+
+QUERY_STRING:
+-------------
+I check if there is a query string in the request message by fetching data
+after '?' character in the request message. If there is a query string then
+I set QUERY_STRING environment variable.
+
+Log file:
+--------
+I get the log file name from the config file and open it in O_APPEND | O_CREAT
+mode. 
+I collect information of incoming connection in accept() call. fork a process
+and redirect stdout of child process to log file descriptor. Then I write
+logging info to standard output. As a result logging message goes to screen
+in parent process and it goes to log file in the child process. The parent 
+process is itself child of main server process and it dies after processing the
+request and the logging process do not become a zombie ( its similar
+to double fork effect).
+
+Program Flow:
+=============
+
+o Setup server
+    o socket()
+    o bind()
+    o listen()
+o Accept calls
+    o accept()
+    o fork a process to serve request
+        o parse request
+            o cat files
+            o list directories
+            o exec cgi script
+    o continue accepting calls in main process
+

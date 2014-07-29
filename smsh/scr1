@@ -1,0 +1,4 @@
+echo this is scr1
+echo Hello World
+. scr2
+

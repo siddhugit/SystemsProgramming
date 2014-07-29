@@ -1,0 +1,4 @@
+echo this is scr2
+date
+. scr3
+

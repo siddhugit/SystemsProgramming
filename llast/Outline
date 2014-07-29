@@ -1,0 +1,124 @@
+NAME : llast
+
+USAGE : llast [-f filename] tty..
+
+DESCRIPTION
+------------
+The implementation of llast is divided into three modules. Each module implements a different sub feature of llast.
+The three sub features which each module represents are:
+
+1) Parsing the command line options.
+2) Buffered reading of wtmp file from disk into the memory in form of utmp objects.
+3) Processing utmp objects and displaying login history.
+
+There is a source file for each module which implements one of the sub features mentioned above.
+
+1) parseOptions.c
+----------------------------------------------------------------------------------------------------
+
+void parseOptions(int argc,char** argv)
+---------------------------------------
+parses command line arguments. On success it sets file name and terminal name.
+On failure it displays error on stderr and exits the process with status code 1.
+
+Input:
+int argc - number of command line arguments
+char** argv - array of strings of command line arguments
+
+
+char* getWtmpFileName()
+-----------------------
+Returns wtmp file name.
+
+char* getTerminalName()
+-----------------------
+Returns terminal name.
+
+int isSystemWTMPUsed()
+----------------------
+Returns true if system wtmp file( /var/log/wtmp ) is being processed by llast, otherwise returns false. 
+
+
+2) wtmpBufferedAccess.c
+----------------------------------------------------------------------------------------------------
+Implements buffering strategy  used in llast. It maintains a begin position and end position of the records currently in memory. If an index being fetched is out of this range ( i.e index < begin_pos or index > end_pos) then buffer is reloaded such that new records fetched contains the utmp object referred by index. It loads additional contiguous utmp objects which appear just before utmp object referred by index in utmp file.   
+First it finds the size of the wtmp file in terms of number of utmp records. It then lseek the file cursor to a position which is one buffer size ( 16*sizeof(struct utmp) ) behind the end of file and read one buffsize amount of data . As soon as index goes out of range it lseeks again to a new position which one buffsize behind the earlier begin position and so on. I have chosen 16 utmp records as the buffer size. NUMRECS (#define NUMRECS 16)is the macro in the source file that defines maximum number of records in buffer.
+
+To calculate utmp_len(), I lseek to end of file, lseek return the offset from beginning of file. Diving offset by size of utmp struct gives me size of utmp records in the file.
+
+ 
+int utmp_open(char* wtmpFileName)
+---------------------------------
+Opens the wtmp file named wtmpFileName. If successful returns file descriptor otherwise returns -1.
+  
+int utmp_len()
+--------------
+Returns number of utmp records in wtmp file.
+ 
+struct utmp* utmp_getrec(int index)
+-----------------------------------
+Returns pointer to utmp record at a given index. The index rages from 0 to utmp_len() - 1. Returns NULL if error.
+
+static int reload(int index)
+----------------------------
+This private function is used to reload utmp records into memory from the disk when buffer does not include utmp record at a given index.
+The buffer can keep up to 16 utmp records in memory. Buffer is reloaded from disk if index falls out of range of the buffer.
+Returns number of records read if OK, -1 on error.
+  
+static int isInBuffer(int index)
+--------------------------------
+This private function checks if index of utmp record being fetched is in the buffer. Returns true if utmp record is in buffer otherwise returns -1.
+
+int utmp_close()
+----------------
+Closes the wtmp file. Returns 0 if OK, -1 on error.
+
+
+3) llast.c
+----------------------------------------------------------------------------------------------------
+Implements processing of utmp objects in the memory. It reads utmp records backwards and process it.
+It handles various cases such as normal logout, shutdown, relogin and duplicate entries. I have ignored crash cases on purpose because Linux's last command does not handle it. It displays the appropriate fields on standard output just the way standard last command does.
+
+int main(int argc,char* argv[])
+-------------------------------
+Main function of the program. calls parseOptions() functions to parse command line and get terminal name and wtmp file name.
+It then calls processRecords() and pass terminal name and wtmp file name as arguments.
+
+static void processRecords(char* filename,char* terminalName)
+-------------------------------------------------------------
+This private function takes file name and terminal name as arguments, opens the file reads and iterates over utmp records backwards and calls processRecord() for each record.
+
+Input:
+char* filename - wtmp file name
+char* terminalName - terminal name
+
+static void processCurrentRecord(struct utmp* currRec,struct utmp* prevRec)
+---------------------------------------------------------------------------
+Takes current record and previous read record. Checks if current record is a shutdown,crash or corresponds to terminal name llast is watching. If records represent shutdown or crash events it does record the shutdown/crash timestamps. If record corresponds to terminal name llast is watching it calls processTerminalRecord() to process those records. It also ignores the duplicate entries in wtmp file.
+
+Input:
+struct utmp* currRec - currently read utmp object
+struct utmp* prevRec - previously read utmp object
+
+static void processTerminalRecord()
+-----------------------------------
+This private function implements the core logic of the program. It compares current terminal record with previous record.
+It handles various cases by reading the attributes of two records i.e. the current and previous record. Depending upon current and previous record being USER_PROCESS or DEAD_PROCESS it figures out cases like normal logout,shutdown,crash etc. Based on the case in which the records  comparison falls, it calls the appropriate functions to format the output message.
+
+static void sprintfLogoutTime(char* msg,time_t logOutTime)
+----------------------------------------------------------
+This private function formats the log out time into msg to emulate standard last command.
+
+void sprintTimeDiff(char* buff,int time1,int time2)
+----------------------------------------------------
+This private utility function is used to calculate time difference and format it. This is useful in calculating difference between login and logout time.
+
+void show_time(time_t timeval,char* format)
+-------------------------------------------
+formats time by getting the local time from unix time and by calling strftime().
+
+void show_info(struct utmp* currRec,char* logoutMsg)
+----------------------------------------------
+Displays utmp record and logoutMsg on standard output. logoutMsg is formatted message for different cases like normal logout, shutdown etc. 
+
+ 

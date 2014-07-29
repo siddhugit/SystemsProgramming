@@ -1,0 +1,170 @@
+     Author:    Siddharth Singh
+	 Date:	4/3/2013
+     Contains:	Design details for CSCI E-215 homework 4 submission.
+===============================================================================
+
+Project: pong
+
+Usage: (./pong) pong waits for one second before each serve. game will start if 
+        either one second is elapsed or a key has been pressed. 
+
+
+Purpose:
+========
+
+Implement a one person ping pong game. The objective of the game
+is to keep ball in the game as long as possible. The main idea of the game is
+to demonstrate multitasking by handling multiple things simultaneously. This is 
+achieved by handling timers and keyboard asynchronously using signal handlers. 
+Timer handling controls the ball movement and keyboard handling controls 
+movement of the paddle.
+
+Data Structure:
+===============
+
+The design follows the object oriented model. The various elements which makes
+this game are represented by objects. Each object has some data members and 
+public interface. Data members can not be accessed out side the file scope and
+outside the file scope it can be accessed/mutated only by calling public APIs 
+exposed by the module. 
+Game has been divided into these objects.
+paddle
+------ 
+    The top,bottom and column position attributes define the paddle. These are
+    the data members for the paddle object. Since there int only one paddle 
+    in the game it is represented by a singleton object. The properties of 
+        paddle are hidden and can be accesed by the following interface.
+        paddle_init() : initializes paddle attributes
+        paddle_contact() : tells if ball is in contact of paddle 
+        paddle_up() : moves paddle up
+        paddle_down() : moves paddle down
+        paddle_undraw() : undraw paddle by replacing paddle char with blank
+ball
+----
+    Similar to paddle ball is also represented by a singleton object.
+    attributes (private):
+        x_pos,y_pos : x and y cordinates of ball
+        x_dir,y_dir : x and y directions of ball's movement ( 1 or -1)
+        x_ttm,y_ttm : x and y time to move
+        x_ttg,y_ttg : x and y time to go
+    public functions:
+        void ball_move() : called for each ticker and changes ball's
+                           postion. New positon is function of ball's 
+                           attributes. 
+        ball_init() : initializes ball attributes.
+        ball_undraw() : undraw ball by replacing ball char with blank
+        ball_yPos() : return y-postion of ball.
+game
+----
+    This object represents the game itself.
+    It handles the various events and life of the game.
+    It acts as a book keeper by managing time elapsed and number of
+    balls left in the game. The game is also represented as singleton object.
+    attributes:
+        balls_left : number of balls left in the game
+        msecs_elapsed : time elapsed in the game
+    public functions:
+        game_init() : initializes game attributes
+        updateClock() : updates time elapsed
+        updateBallsLeft() : updates ball left
+        ballLost() : handles event when a ball is lost.
+        serve() : starts the game.
+        stop() : stops the game.
+        isDone() : notifies if game is finished.
+handlers
+--------
+    It defines the handler functions for SIGALRM and SIGIO.
+pong
+----
+    Initializes and destroys the game attributes.
+    
+Algorithm:
+==========
+
+The program implements two handlers, one for IO read and one for handling
+alarm signal. The main flow of the program pauses until a signal is received,
+handles the signal continue to pause in a while loop until game is finished.
+Both the IO handler and alarm handlers are called asynchronously. IO is read 
+asynchronously by using aio_read() which returns immediately and generates 
+SIGIO signal. so program installs two separate handlers, one for SIGIO 
+and one for SIGALRM.
+SIGIO handler controls movement of the paddle depending upon which key is 
+pressed. If key pressed is 'k', paddle is moved up and paddle moves down if
+key 'm' is pressed. Game exits if 'q' is pressed.
+SIGALRM handlers updates the game clock and motion of the ball.
+It checks if ball is bounced back by paddle or court edges in which case it 
+updates direction of the ball or lost in which case takes the necessary action
+by checking the number of balls left. if no more balls are left it notifies the
+program and program comes out of main loop and exits. If balls are left next 
+ball is served. Before each serve, program generates random numbers within a
+reasonable range in order to randomize speed and direction of the ball.
+
+Race Condition:
+===============
+
+As we see here SIGALRM and SIGIO handlers are called asynchronously, and if 
+handlers would get called recursively the program can call a handler while 
+other handler is being executed. 
+If a handler gets called recursively while other
+handler is still running the program can go to an inconsistent state. in order
+to prevent that I am blocking a signal while other signal is being handled.
+E.g. while SIGIO handler is running SIGALRM is being blocked and while SIGALRM 
+is running SIGIO is being blocked. Thus if process receives SIGIO when SIGALRM 
+is running , it will be blocked until SIGALRM handler is finished and 
+vice versa.
+Also before moving the ball in timer handler I first check if ball is bounced
+or lost to ensure
+that the correct states of the paddle and the ball have been compared.
+Otherwise if we move ball first before checking "ball loose"
+condition in timer handler and during execution of time handler the paddle 
+is tried to move by pressing keyboard key, we may loose this particular 
+movement of paddle as SIGIO is blocked and as a result 
+ball position will get compared to a wrong position of the paddle.
+
+Program flow:
+=============
+
+    o initialize curses
+    o call srand(getpid())
+    o draw court
+    o set up aio buffer and read
+    o set SIGIO handler
+        o block SIGALRM
+    o set SIGALRM handler
+        o block SIGIO
+    o serve
+        o get random speed/direction
+        o start timer
+    o exec a loop until game is finished
+        o pause
+    o SIGIO handler
+        o change paddle position depending upon keyboard input
+    o SIGALRM handler
+        o update game clock
+        o update ball poistion
+        o check if ball bounced or lost
+            o if bounced
+                o if hit edges
+                    o reverse direction
+                o if hit paddle
+                    o randomize speed
+                    o reverse direction
+            o if lost
+                o stop (kill timer)
+                o check if balls are left
+                    o if left 
+                        o serve
+                    o else 
+                        o notify main that game is finished
+     o Main
+        o de-initialize curses
+        o exit
+
+Error handling:
+===============
+
+    o System call errors
+        o sigaction
+        o setitimer
+                        
+
